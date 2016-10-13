@@ -82,15 +82,25 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
             return;
         }
 
+        // get all available attributes and deliver them with the credentials
+        $credentials = array();
+        foreach ($this->getAttributesDefinitions() as $attribute => $definition) {
+            $credentials[$attribute] = $this->getAttribute($request, $attribute);
+        }
+
         // What you return here will be passed to getUser() as $credentials
-        return array('username' => $this->getAttribute($request, $this->usernameAttribute));
+        return $credentials;
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         // if null, authentication will fail
         // if a User object, checkCredentials() is called
-        return $userProvider->loadUserByUsername($credentials['username']);
+        $user = $userProvider->loadUserByUsername($this->usernameAttribute);
+
+        if (!$user) {
+            return $userProvider->createUser($credentials);
+        }
     }
 
     public function checkCredentials($credentials, UserInterface $user)
@@ -123,7 +133,10 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
         return false;
     }
 
-
+    private function getAttributesDefinitions()
+    {
+        return $this->attributeDefinitions;
+    }
 
     private function getAttribute($request, $attribute)
     {
