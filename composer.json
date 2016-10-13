@@ -1,0 +1,16 @@
+{
+    "name": "gauss-allianz/shibboleth-guard-bundle",
+    "description": "Bundle for Shibboleth SP authentication in symfony using the guard component.",
+    "keywords": ["symfony2", "symfony3","security","shibboleth","guard"],
+    "license": "Apache License 2.0",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Gerd Rönsch",
+            "email": "gerd.roensch@tu-dresden.de"
+        }
+    ],
+    "autoload": {
+	"psr-4": { "GaussAllianz\\ShibbolethGuardBundle\\": "" }
+    }
+}

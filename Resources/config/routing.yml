@@ -1,0 +1,3 @@
+shibboleth_guard_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: ShibbolethGuardBundle:Default:index }
