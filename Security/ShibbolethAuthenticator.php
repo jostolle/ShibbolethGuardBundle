@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Psr\Log\LoggerInterface;
+use GaussAllianz\ShibbolethGuardBundle\Security\ShibbolethUserProviderInterface;
+use Exception;
 
 class ShibbolethAuthenticator extends AbstractGuardAuthenticator
 {
@@ -94,13 +96,20 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        // if null, authentication will fail
-        // if a User object, checkCredentials() is called
-        $user = $userProvider->loadUserByUsername($this->usernameAttribute);
+        $user = null;
 
-        if (!$user) {
-            return $userProvider->createUser($credentials);
+        if ($userProvider instanceof ShibbolethUserProviderInterface) {
+            try {
+                $user = $userProvider->loadUserByUsername($credentials[$this->usernameAttribute]);
+            } catch (Exception $e) {
+                $user = $userProvider->createUser($credentials);
+            }
+
+            return $user;
+        } else {
+            $user = $userProvider->loadUserByUsername($credentials[$this->usernameAttribute]);
         }
+        return $user;
     }
 
     public function checkCredentials($credentials, UserInterface $user)
