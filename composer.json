@@ -4,7 +4,7 @@
     "keywords": ["symfony2", "symfony3","security","shibboleth","guard", "gauss-allianz", "gauss","allianz"],
     "license": "Apache License 2.0",
     "type": "symfony-bundle",
-    "version": "1.0",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Gerd Rönsch",
