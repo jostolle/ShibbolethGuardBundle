@@ -180,6 +180,19 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
         return $this->getHandlerURL($request) . $this->getSessionInitiatorPath() . '?target=' . urlencode($targetUrl);
     }
 
+    public function getLogoutUrl(Request $request, $return = null)
+    {
+        $logout_redirect = $this->getAttribute($request, 'logoutURL');
+        if (!empty($logout_redirect)) {
+            return $this->getHandlerUrl($request) . '/Logout?return='. urlencode($logout_redirect
+                    . (empty($return)? '' : '?return='.$return));
+        } elseif (!empty($return)) {
+            return $this->getHandlerUrl($request) . '/Logout?return='.urlencode($return);
+        } else {
+            return $this->getHandlerUrl($request) . '/Logout';
+        }
+    }
+
     public function getSessionInitiatorPath()
     {
         return $this->sessionInitiatorPath;
