@@ -180,6 +180,16 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
         return $this->getHandlerURL($request) . $this->getSessionInitiatorPath() . '?target=' . urlencode($targetUrl);
     }
 
+    public function getSessionInitiatorPath()
+    {
+        return $this->sessionInitiatorPath;
+    }
+
+    public function getHandlerUrl(Request $request)
+    {
+        return 'https://' . $request->getHost() . $this->handlerPath;
+    }
+
 
     private function addAttributeDefinition($def)
     {
