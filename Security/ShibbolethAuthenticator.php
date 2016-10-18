@@ -79,7 +79,7 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        if (!$this->hasAttribute($request, 'applicationId')) {
+        if (!$this->hasAttribute($request, 'applicationId') || !((bool) $this->getAttribute($request, 'applicationId'))) {
             // User is not authenticated
             return;
         }
