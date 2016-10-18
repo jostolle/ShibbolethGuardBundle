@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Psr\Log\LoggerInterface;
 use GaussAllianz\ShibbolethGuardBundle\Security\ShibbolethUserProviderInterface;
+use GaussAllianz\ShibbolethGuardBundle\Security\UsernameAttributeNotGivenException;
 use Exception;
 
 class ShibbolethAuthenticator extends AbstractGuardAuthenticator
@@ -97,6 +98,13 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $user = null;
+        $username_attribute = $credentials[$this->usernameAttribute];
+
+        // If the attribute was not given or is empty throw exception
+        if (!$username_attribute || strlen($username_attribute) < 1) {
+            $idp = $credentials['identityProvider'];
+            throw new UsernameAttributeNotGivenException("The IdP '$idp' does not deliver the required username attribute.");
+        }
 
         if ($userProvider instanceof ShibbolethUserProviderInterface) {
             try {
