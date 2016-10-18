@@ -155,7 +155,7 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
         return $this->attributeDefinitions;
     }
 
-    private function getAttribute($request, $attribute)
+    public function getAttribute($request, $attribute)
     {
         if ($this->useHeaders) {
             return $request->headers->get(strtolower($this->attributeDefinitions[$attribute]['header']), null);
