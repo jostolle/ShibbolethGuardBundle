@@ -58,33 +58,36 @@ class ShibbolethAuthenticator extends AbstractGuardAuthenticator
      *
      * @param string $data_path The absolute path where to find the json data files.
      */
-     public function __construct($handlerPath, $sessionInitiatorPath, $usernameAttribute, $attributeDefinitions = null, $useHeaders = true, LoggerInterface $logger)
-     {
-         $this->handlerPath = $handlerPath;
-         $this->sessionInitiatorPath = $sessionInitiatorPath;
-         $this->usernameAttribute = $usernameAttribute;
-         if (is_array($attributeDefinitions)) {
-             foreach ($attributeDefinitions as $name => $def) {
-                 $def['alias'] = $name;
-                 $this->addAttributeDefinition($def);
-             }
-         }
-         $this->useHeaders = $useHeaders;
-         $this->logger = $logger;
-         $this->logger->debug("Created Shibboleth Guard Service");
-     }
+    public function __construct($handlerPath, $sessionInitiatorPath, $usernameAttribute, $attributeDefinitions = null, $useHeaders = true, LoggerInterface $logger)
+    {
+        $this->handlerPath = $handlerPath;
+        $this->sessionInitiatorPath = $sessionInitiatorPath;
+        $this->usernameAttribute = $usernameAttribute;
+        if (is_array($attributeDefinitions)) {
+            foreach ($attributeDefinitions as $name => $def) {
+                $def['alias'] = $name;
+                $this->addAttributeDefinition($def);
+            }
+        }
+        $this->useHeaders = $useHeaders;
+        $this->logger = $logger;
+        $this->logger->debug("Created Shibboleth Guard Service");
+    }
 
     /**
-     * Called on every request. Return whatever credentials you want,
-     * or null to stop authentication.
+     * Called on every request. If no applicationId is not present in request,
+     * this authenticator can't be used because no Shibboleth authentication is present.
+     */
+    public function supports(Request $request)
+    {
+        return ($this->hasAttribute($request, 'applicationId') && ((bool) $this->getAttribute($request, 'applicationId')));
+    }
+
+    /**
+     * Assume supports was successfull: Return credentials from request.
      */
     public function getCredentials(Request $request)
     {
-        if (!$this->hasAttribute($request, 'applicationId') || !((bool) $this->getAttribute($request, 'applicationId'))) {
-            // User is not authenticated
-            return;
-        }
-
         // get all available attributes and deliver them with the credentials
         $credentials = array();
         foreach ($this->getAttributesDefinitions() as $attribute => $definition) {
